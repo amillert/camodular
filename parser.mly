@@ -42,9 +42,9 @@ let scope :=
   | CLASS; classID = ID; OPENS; openedID = ID; vars = variables;
     (* the opening module doesn't expose inherited variables further *)
     {
-      let s = Env.findInEnv openedID in
       (* TODO: ain't the same as exposed ... *)
       let updatedScope =
+        let s = Env.findInEnv openedID in
         if List.length s.exposed > 0 then Util.dedup s.exposed vars else vars
       in
       ClassScope { id = classID; vars = updatedScope }
