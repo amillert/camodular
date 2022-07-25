@@ -28,7 +28,7 @@
 
 %token EOF
 
-%start <repr> program
+%start <ast> program
 
 %%
 
