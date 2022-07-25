@@ -23,7 +23,7 @@ module Env = struct
           else { internal = joined; exposed = vars }
         in
         match mode with
-        | NoInherit -> ()
+        | NoInherit -> env := StringMap.add id (parse_scopes "?") !env
         | Extend pid ->
             env := StringMap.add id (parse_scopes pid ~expose:true) !env
         | Open pid -> env := StringMap.add id (parse_scopes pid) !env)
