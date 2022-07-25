@@ -3,7 +3,7 @@
   open Env
 
   let update_scope ?(mode = EXTENDS) classID superID vars =
-    let open Sem in
+    let open Scope in
     let updatedScope =
       let s = Env.find_in_env superID in
       if List.length s.exposed > 0 then Util.dedup s.exposed vars else vars

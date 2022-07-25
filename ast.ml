@@ -1,5 +1,3 @@
-(* -***- Abstract Syntax Tree -***- *)
-
 type id = string [@@deriving show { with_path = false }]
 
 type inheritance_mode = Extend of id | Open of id | NoInherit
