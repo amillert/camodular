@@ -1,8 +1,9 @@
-open Ast
-open Scope
 module StringMap = Map.Make (String)
 
 module Env = struct
+  open Ast
+  open Scope
+
   type 'a t = scope StringMap.t
 
   let env = ref StringMap.empty

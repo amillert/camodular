@@ -1,7 +1,7 @@
-open Ast
-open Scope
-
 module Env : sig
+  open Ast
+  open Scope
+
   type 'a t
 
   (* env is a running dependency environment
