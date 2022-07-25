@@ -5,7 +5,7 @@
    2. Open - encapsulates the scope making it invisible for a subclass. *)
 type extension_mode = Extend | Open [@@deriving show { with_path = false }]
 
-type repr =
+type ast =
   | ClassScope of { id : string; vars : string list; mode : extension_mode }
   | Empty
   | Invalid
