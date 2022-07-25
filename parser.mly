@@ -1,17 +1,24 @@
 %{
   open Ast
+  open Env
 
   let update_scope ?(mode = EXTENDS) classID superID vars =
-    let open Env in
+    let open Sem in
     let updatedScope =
-      let s = Env.findInEnv superID in
+      let s = Env.find_in_env superID in
       if List.length s.exposed > 0 then Util.dedup s.exposed vars else vars
     in
     match mode with
     | EXTENDS -> classYesVars classID updatedScope
-    | OPENS -> classYesVars classID updatedScope ~mode:Open
+    | OPENS ->
+        let mode = Open superID in
+        classYesVars classID updatedScope ~mode:mode (* TODO: remove :mode *)
     | EOF -> Empty
     | _ -> Invalid
+
+  let make_env ast =
+    let () = Env.add_to_env ast in
+    ast
 %}
 
 %token CLASS
@@ -39,12 +46,12 @@ let program :=
 (* class defined as either: empty, non-empty, extended, opened *)
 let scope :=
   (* TODO: why EOF ? *)
-  | CLASS; classID = ID; EOF; { classNoVars classID }
-  | CLASS; classID = ID; vars = variables; { classYesVars classID vars }
+  | CLASS; classID = ID; EOF; { make_env @@ classNoVars classID }
+  | CLASS; classID = ID; vars = variables; { make_env @@ classYesVars classID vars }
   | CLASS; classID = ID; EXTENDS; extendedID = ID; vars = variables;
-    { update_scope classID extendedID vars }
+    { make_env @@ update_scope classID extendedID vars }
   | CLASS; classID = ID; OPENS; openedID = ID; vars = variables;
-    { update_scope classID openedID vars ~mode:OPENS }
+    { make_env @@ update_scope classID openedID vars ~mode:OPENS }
 
 let variables :=
   | BEG_SCOPE; END_SCOPE; { [] }

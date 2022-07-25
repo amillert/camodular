@@ -1,3 +1,4 @@
+open Ast
 open Sem
 
 module Env : sig
@@ -7,10 +8,10 @@ module Env : sig
      to disambiguate the class scope. *)
   val env : 'a t ref
 
-  (* findInEnv searches for a derived class in env *)
-  val findInEnv : string -> scopeT
+  (* find_in_env searches for a derived class in env. *)
+  val find_in_env : string -> scopeT
 
-  (* mutateEnv either injects the class scope
+  (* add_to_env either injects the class scope
      in env or updates already defined. *)
-  val mutateEnv : classT -> unit
+  val add_to_env : ast -> unit
 end
