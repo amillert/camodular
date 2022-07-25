@@ -1,4 +1,7 @@
 (* Abstract Syntax Tree *)
+(* Currently supported 2 modes of modular extension:
+   1. Extend - freely exposes the scope,
+   2. Open - encapsulates the scope making it invisible for a subclass. *)
 type extension_mode = Extend | Open [@@deriving show { with_path = false }]
 
 type repr =

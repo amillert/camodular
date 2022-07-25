@@ -31,7 +31,6 @@ let scope :=
   | CLASS; classID = ID; EOF; { classNoVars classID }
   | CLASS; classID = ID; vars = variables; { classYesVars classID vars }
   | CLASS; classID = ID; EXTENDS; extendedID = ID; vars = variables;
-    (* the extending module exposes inherited variables further *)
     {
       let updatedScope =
         let s = Env.findInEnv extendedID in
@@ -40,7 +39,6 @@ let scope :=
       classYesVars classID updatedScope
     }
   | CLASS; classID = ID; OPENS; openedID = ID; vars = variables;
-    (* the opening module doesn't expose inherited variables further *)
     {
       (* TODO: ain't the same as exposed ... *)
       let updatedScope =
