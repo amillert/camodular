@@ -1,16 +1,15 @@
 (* -***- Abstract Syntax Tree -***- *)
 
-(* Currently supported 2 modes of modular extension:
-   1. Extend - freely exposes the scope,
-   2. Open - encapsulates the scope making it invisible for a subclass. *)
-type extension_mode = Extend | Open [@@deriving show { with_path = false }]
+type id = string [@@deriving show { with_path = false }]
+
+type inheritance_mode = Extend of id | Open of id | NoInherit
+[@@deriving show { with_path = false }]
 
 type ast =
-  | ClassScope of { id : string; vars : string list; mode : extension_mode }
+  | ClassScope of { id : id; vars : string list; mode : inheritance_mode }
   | Empty
   | Invalid
 [@@deriving show { with_path = false }]
 
-(* Allow extension by default for more flexibility. *)
-let classNoVars ?(mode = Extend) id = ClassScope { id; vars = []; mode }
-let classYesVars ?(mode = Extend) id vars = ClassScope { id; vars; mode }
+let classNoVars ?(mode = NoInherit) id = ClassScope { id; vars = []; mode }
+let classYesVars ?(mode = NoInherit) id vars = ClassScope { id; vars; mode }
