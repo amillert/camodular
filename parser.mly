@@ -1,6 +1,17 @@
 %{
-  open Env
   open Ast
+
+  let update_scope ?(mode = EXTENDS) classID superID vars =
+    let open Env in
+    let updatedScope =
+      let s = Env.findInEnv superID in
+      if List.length s.exposed > 0 then Util.dedup s.exposed vars else vars
+    in
+    match mode with
+    | EXTENDS -> classYesVars classID updatedScope
+    | OPENS -> classYesVars classID updatedScope ~mode:Open
+    | EOF -> Empty
+    | _ -> Invalid
 %}
 
 %token CLASS
@@ -31,22 +42,9 @@ let scope :=
   | CLASS; classID = ID; EOF; { classNoVars classID }
   | CLASS; classID = ID; vars = variables; { classYesVars classID vars }
   | CLASS; classID = ID; EXTENDS; extendedID = ID; vars = variables;
-    {
-      let updatedScope =
-        let s = Env.findInEnv extendedID in
-        if List.length s.exposed > 0 then Util.dedup s.exposed vars else vars
-      in
-      classYesVars classID updatedScope
-    }
+    { update_scope classID extendedID vars }
   | CLASS; classID = ID; OPENS; openedID = ID; vars = variables;
-    {
-      (* TODO: ain't the same as exposed ... *)
-      let updatedScope =
-        let s = Env.findInEnv openedID in
-        if List.length s.exposed > 0 then Util.dedup s.exposed vars else vars
-      in
-      classYesVars classID updatedScope ~mode:Open
-    }
+    { update_scope classID openedID vars ~mode:OPENS }
 
 let variables :=
   | BEG_SCOPE; END_SCOPE; { [] }
