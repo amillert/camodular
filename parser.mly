@@ -37,7 +37,7 @@ let scope :=
         let s = Env.findInEnv extendedID in
         if List.length s.exposed > 0 then Util.dedup s.exposed vars else vars
       in
-      ClassScope { id = classID; vars = updatedScope }
+      classYesVars classID updatedScope
     }
   | CLASS; classID = ID; OPENS; openedID = ID; vars = variables;
     (* the opening module doesn't expose inherited variables further *)
@@ -47,7 +47,7 @@ let scope :=
         let s = Env.findInEnv openedID in
         if List.length s.exposed > 0 then Util.dedup s.exposed vars else vars
       in
-      ClassScope { id = classID; vars = updatedScope }
+      classYesVars classID updatedScope ~mode:Open
     }
 
 let variables :=
