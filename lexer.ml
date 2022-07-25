@@ -31,3 +31,5 @@ let rec token buf =
       let _ = next buf in
       raise @@ LexError (pos, "Unknown character: " ^ Utf8.lexeme buf)
   | _ -> assert false
+
+let lex buf = with_tokenizer token buf
