@@ -1,6 +1,6 @@
 %{
   open Env
-  open Repr
+  open Ast
 %}
 
 %token CLASS

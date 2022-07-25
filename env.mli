@@ -1,3 +1,5 @@
+open Sem
+
 module Env : sig
   type 'a t
 
@@ -6,9 +8,9 @@ module Env : sig
   val env : 'a t ref
 
   (* findInEnv searches for a derived class in env *)
-  val findInEnv : string -> Repr.scopeT
+  val findInEnv : string -> scopeT
 
   (* mutateEnv either injects the class scope
      in env or updates already defined. *)
-  val mutateEnv : Repr.classT -> unit
+  val mutateEnv : classT -> unit
 end
