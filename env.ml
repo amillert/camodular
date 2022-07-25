@@ -17,18 +17,14 @@ module Env = struct
           let parent_scope = find_in_env pid in
           Util.dedup parent_scope.exposed vars
         in
+        let parse_scopes ?(expose = false) pid =
+          let joined = join_parent_scope pid vars in
+          if expose = true then { internal = joined; exposed = joined }
+          else { internal = joined; exposed = vars }
+        in
         match mode with
         | NoInherit -> ()
         | Extend pid ->
-            let parsed_scope =
-              let joined_scopes = join_parent_scope pid vars in
-              { internal = joined_scopes; exposed = joined_scopes }
-            in
-            env := StringMap.add id parsed_scope !env
-        | Open pid ->
-            let parsed_scope =
-              let joined_scopes = join_parent_scope pid vars in
-              { internal = joined_scopes; exposed = vars }
-            in
-            env := StringMap.add id parsed_scope !env)
+            env := StringMap.add id (parse_scopes pid ~expose:true) !env
+        | Open pid -> env := StringMap.add id (parse_scopes pid) !env)
 end
