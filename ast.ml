@@ -8,6 +8,7 @@ type extension_mode = Extend | Open [@@deriving show { with_path = false }]
 type repr =
   | ClassScope of { id : string; vars : string list; mode : extension_mode }
   | Empty
+  | Invalid
 [@@deriving show { with_path = false }]
 
 (* Allow extension by default for more flexibility. *)
