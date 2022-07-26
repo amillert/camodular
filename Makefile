@@ -1,6 +1,6 @@
-.PHONY: all build run
-all:
-	build run
+.PHONY: utop
+utop:
+	@dune utop src
 
 .PHONY: dev
 dev:
@@ -9,7 +9,3 @@ dev:
 .PHONY: build
 build:
 	@dune build @check
-
-.PHONY: run
-run:
-	@dune exec ./main.exe
