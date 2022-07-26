@@ -1,0 +1,4 @@
+(library
+ (name repr)
+ (preprocess
+  (pps ppx_deriving.show sedlex.ppx)))

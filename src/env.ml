@@ -1,8 +1,8 @@
 module StringMap = Map.Make (String)
 
 module Env = struct
-  open Ast
-  open Scope
+  open Repr.Ast
+  open Repr.Scope
 
   type 'a t = scope StringMap.t
 

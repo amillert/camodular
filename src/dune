@@ -1,0 +1,8 @@
+(library
+ (name camodular)
+ (libraries menhirLib sedlex repr)
+ (preprocess
+  (pps ppx_deriving.show sedlex.ppx)))
+
+(menhir
+ (modules parser))

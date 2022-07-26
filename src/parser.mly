@@ -1,5 +1,5 @@
 %{
-  open Ast
+  open Repr.Ast
 
   let make_scope classID vars mode = classYesVars classID vars ~mode
 
@@ -23,10 +23,10 @@
 
 %token EOF
 
-%type <Ast.ast> scope
+%type <Repr.Ast.ast> scope
 %type <string list> variables
 
-%start <Ast.ast> program
+%start <Repr.Ast.ast> program
 
 %%
 
@@ -34,7 +34,7 @@ let program :=
   | EOF; { Empty }
   | s = scope; { s }
 
-let scope :=
+let scope ==
   | CLASS; classID = ID; EOF; { make_env @@ classNoVars classID }
   | CLASS; classID = ID; vars = variables; { make_env @@ classYesVars classID vars }
   | CLASS; classID = ID; EXTENDS; extendedID = ID; vars = variables;
