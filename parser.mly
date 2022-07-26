@@ -23,7 +23,10 @@
 
 %token EOF
 
-%start <ast> program
+%type <Ast.ast> scope
+%type <string list> variables
+
+%start <Ast.ast> program
 
 %%
 
