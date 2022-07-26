@@ -13,5 +13,5 @@ let process filename () =
     exit (-1)
 
 let () =
-  let filename = "./files/class.txt" in
+  let filename = "./files/classes.txt" in
   process filename ()

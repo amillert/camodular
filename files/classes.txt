@@ -1,0 +1,20 @@
+class B { var x;
+  var y; var z;
+}
+
+
+class C
+{ var a; }
+
+class OK opens B {
+  var x;
+  print y;
+}
+class OK2 extends OK {
+  print x;
+}
+
+class NOT extends OK {
+  print y;
+}
+
