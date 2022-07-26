@@ -1,6 +1,6 @@
 module Env : sig
-  open Ast
-  open Scope
+  open Repr.Ast
+  open Repr.Scope
 
   type 'a t
 
