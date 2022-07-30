@@ -13,5 +13,5 @@ module Env : sig
 
   (* add_to_env either injects the class scope
      in env or updates already defined. *)
-  val add_to_env : ast -> unit
+  val add_to_env : prints:id list -> ast -> unit
 end

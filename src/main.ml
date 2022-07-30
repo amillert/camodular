@@ -7,11 +7,11 @@ let process filename () =
   let lx () = lex lexbuf () in
   let p = MenhirLib.Convert.Simplified.traditional2revised program in
   let ast = p lx in
-  try match ast with _ -> print_endline "some pretty print"
+  try match ast with _ -> ast |> Repr.Ast.show |> print_endline
   with _ ->
     let _ = failwith "BOOOM !" in
     exit (-1)
 
 let () =
-  let filename = "./files/classes.txt" in
+  let filename = "./files/c1.txt" in
   process filename ()

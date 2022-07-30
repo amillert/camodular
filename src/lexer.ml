@@ -24,6 +24,7 @@ let rec token buf =
   | '{' -> BEG_SCOPE
   | '}' -> END_SCOPE
   | "var" -> VAR
+  | "print" -> PRINT
   | variable_identifier -> ID (Utf8.lexeme buf)
   | ';' -> SEMICOLON
   | any ->
