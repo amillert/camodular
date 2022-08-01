@@ -40,29 +40,14 @@ let program :=
 
 let file_scope :=
   | cls = class_scope; EOF; { [cls] }
-  (* | CLASS; cls = class_scope; BEG_SCOPE; END_SCOPE; { [cls] } *)
-  (* | CLASS; cls = class_scope; BEG_SCOPE; END_SCOPE; EOF; { [cls] } *)
   | cls = class_scope; rest = file_scope; EOF; { cls :: rest }
-  (* | cls = class_scope; SEMICOLON; rest = scope; EOF; { cls :: rest } *)
 
 let class_scope :=
   | CLASS; classID = ID; { make_env @@ classNoVars classID }
-  (* | classID = ID; BEG_SCOPE; END_SCOPE; { make_env @@ classNoVars classID } *)
-  (* | classID = ID; BEG_SCOPE; END_SCOPE; SEMICOLON; { make_env @@ classNoVars classID } (* recursse *) *)
   | CLASS; classID = ID; EXTENDS; extendedID = ID;
     { make_env @@ make_scope classID [] (Extend extendedID) }
-  (* | classID = ID; EXTENDS; extendedID = ID; BEG_SCOPE; END_SCOPE; EOF; *)
-  (*   { make_env @@ make_scope classID [] (Extend extendedID) } *)
-  (* | classID = ID; EXTENDS; extendedID = ID; BEG_SCOPE; END_SCOPE; SEMICOLON; (* recurse *) *)
-  (*   { make_env @@ make_scope classID [] (Extend extendedID) } *)
   | CLASS; classID = ID; OPENS; openedID = ID;
     { make_env @@ make_scope classID [] (Open openedID) }
-  (* | classID = ID; OPENS; openedID = ID; EOF; *)
-  (*   { make_env @@ make_scope classID [] (Open openedID) } *)
-  (* | classID = ID; OPENS; openedID = ID; BEG_SCOPE; END_SCOPE; EOF; *)
-  (*   { make_env @@ make_scope classID [] (Open openedID) } *)
-  (* | classID = ID; OPENS; openedID = ID; BEG_SCOPE; END_SCOPE; SEMICOLON; *)
-  (*   { make_env @@ make_scope classID [] (Open openedID) } *)
   | CLASS; classID = ID; BEG_SCOPE; (vars, prints) = variables;
     { let scope = classYesVars classID vars in make_env scope ~prints }
   | CLASS; classID = ID; EXTENDS; extendedID = ID; BEG_SCOPE; (vars, prints) = variables;
@@ -73,6 +58,6 @@ let class_scope :=
 let variables :=
   | END_SCOPE; { [], [] }
   | VAR; id = ID; SEMICOLON; (otherIDs, otherPrints) = variables; END_SCOPE;
-    { (Util.dedup [id] otherIDs, otherPrints) }
+    { Util.dedup [id] otherIDs, otherPrints }
   | PRINT; id = ID; SEMICOLON; (otherIDs, otherPrints) = variables; END_SCOPE;
-    { (otherIDs, Util.dedup [id] otherPrints) }
+    { otherIDs, Util.dedup [id] otherPrints }
