@@ -6,6 +6,10 @@ utop:
 dev:
 	@dune build @check -w
 
+.PHONY: all
+all:
+	@dune clean; dune build @check
+
 .PHONY: build
 build:
 	@dune build @check
