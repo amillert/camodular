@@ -8,6 +8,8 @@ module Env : sig
      to disambiguate the class scope. *)
   val env : 'a t ref
 
+  exception EnvException of string
+
   (* find_in_env searches for a derived class in env. *)
   val find_in_env : string -> scope
 

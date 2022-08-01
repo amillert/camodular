@@ -1,17 +1,13 @@
-open Lexer
 open Sedlexing
-open Parser
 
 let process filename () =
   let lexbuf = filename |> open_in |> Utf8.from_channel in
-  let lx () = lex lexbuf () in
-  let p = MenhirLib.Convert.Simplified.traditional2revised program in
-  let ast = p lx in
-  try match ast with _ -> ast |> Repr.Ast.show |> print_endline
-  with _ ->
-    let _ = failwith "BOOOM !" in
-    exit (-1)
+  let parse = MenhirLib.Convert.Simplified.traditional2revised Parser.program in
+  let asts = lexbuf |> Lexer.lex |> parse in
+  List.iter Repr.Ast.print asts
 
 let () =
-  let filename = "./files/c1.txt" in
-  process filename ()
+  let open Util.Syntax in
+  let filenameA = "./files/testa" in
+  let filenameB = "./files/testb" in
+  process filenameA *> process filenameB @> process filenameA

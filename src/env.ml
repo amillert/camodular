@@ -15,14 +15,15 @@ module Env = struct
 
   let env = ref StringMap.empty
 
+  exception EnvException of string
+
   let find_in_env id =
-    match StringMap.find_opt id !env with None -> emptyScope | Some x -> x
+    match StringMap.find_opt id !env with
+    | None -> raise @@ EnvException "Can't find extended module in env"
+    | Some x -> x
 
   let add_to_env ~prints = function
-    | Empty | Invalid ->
-        if List.length prints = 0 then
-          failwith "can't access if there's nothing"
-        else ()
+    | Empty | Invalid -> ()
     | ClassScope { id; vars; mode } -> (
         let join_parent_scope pid vars =
           let parent_scope = find_in_env pid in
@@ -35,15 +36,15 @@ module Env = struct
             |> IdSet.elements
           in
           if List.length intersect <> List.length prints then
-            failwith "can't find all references in the scope"
+            raise @@ EnvException "can't find all references in the scope"
           else if expose = true then
             if List.length intersect = List.length prints then
               { internal = joined; exposed = joined }
-            else failwith "can't find all references in the scope"
+            else raise @@ EnvException "can't find all references in the scope"
           else { internal = joined; exposed = vars }
         in
         match mode with
-        | NoInherit -> env := StringMap.add id (merge_scopes "?") !env
+        | NoInherit -> env := StringMap.add id emptyScope !env
         | Extend pid ->
             env := StringMap.add id (merge_scopes pid ~expose:true) !env
         | Open pid -> env := StringMap.add id (merge_scopes pid) !env)
