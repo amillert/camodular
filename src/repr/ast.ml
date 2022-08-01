@@ -9,6 +9,9 @@ type ast =
   | Invalid
 [@@deriving show { with_path = false }]
 
+let classNoVars ?(mode = NoInherit) id = ClassScope { id; vars = []; mode }
+let classYesVars ?(mode = NoInherit) id vars = ClassScope { id; vars; mode }
+
 let show : ast -> string = function
   | ClassScope { id; vars; _ } ->
       let part acc x = acc ^ " " ^ x in
