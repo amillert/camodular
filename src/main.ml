@@ -11,9 +11,14 @@ let process filename () =
     | Env.EnvException msg when expectFailure ->
         let () = print_endline @@ "Graceful recovery from EnvError: " ^ msg in
         [ Invalid ]
+    | Env.EnvException msg ->
+        let () = print_endline @@ "Dirty recovery from EnvError: " ^ msg in
+        failwith msg
     | _ -> failwith "Unexpected error; can't recover - BOOOM !"
   in
   List.iter print asts
+
+[@@@ocamlformat "disable"]
 
 let () =
   let open Util.Syntax in
