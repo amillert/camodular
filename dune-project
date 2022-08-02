@@ -8,4 +8,4 @@
 
 (package
  (name camodular)
- (depends (ocaml (>= "4.08.0")) ppx_deriving menhir sedlex))
+ (depends (ocaml (>= "4.08.0")) menhir sedlex))

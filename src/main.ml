@@ -18,6 +18,8 @@ let process filename () =
   in
   List.iter print asts
 
+[@@@ocamlformat "disable"]
+
 let () =
   let open Util.Syntax in
   let filename1 = "./files/testa_ok" in

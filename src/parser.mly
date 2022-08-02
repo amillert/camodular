@@ -55,9 +55,13 @@ let class_scope :=
   | CLASS; classID = ID; OPENS; openedID = ID; BEG_SCOPE; (vars, prints) = variables;
     { let scope = make_scope classID vars (Open openedID) in make_env scope ~prints }
 
+(* don't allow empty {} *)
 let variables :=
-  | END_SCOPE; { [], [] }
-  | VAR; id = ID; SEMICOLON; (otherIDs, otherPrints) = variables; END_SCOPE;
+  | VAR; id = ID; SEMICOLON; END_SCOPE; { [id], [] }
+  | PRINT; id = ID; SEMICOLON; END_SCOPE; { [], [id] }
+  (* | END_SCOPE; { [], [] } *)
+  (* | SEMICOLON; { [], [] } *)
+  | VAR; id = ID; SEMICOLON; (otherIDs, otherPrints) = variables;
     { Util.dedup [id] otherIDs, otherPrints }
-  | PRINT; id = ID; SEMICOLON; (otherIDs, otherPrints) = variables; END_SCOPE;
+  | PRINT; id = ID; SEMICOLON; (otherIDs, otherPrints) = variables;
     { otherIDs, Util.dedup [id] otherPrints }
