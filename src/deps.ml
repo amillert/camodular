@@ -5,36 +5,29 @@ module DependencyResolver = struct
 
   let deps = ref StringMap.empty
 
-  let class_names xs =
-    let rec go acc = function
-      | [] -> acc
-      | "class" :: x :: tail -> go (x :: acc) tail
-      | _ :: t -> go acc t
-    in
-    go [] xs
-
   let build dir =
-    let class_pattern x = Filename.extension x |> ( = ) ".cls" in
-    let class_files =
-      Sys.readdir dir |> Array.to_list |> List.filter class_pattern
-    in
-    let whitespace_regex = Str.regexp "[ \n\r\x0c\t]+" in
     let get_classes_file filename =
-      let ch = open_in (dir ^ "/" ^ filename) in
-      let s = really_input_string ch (in_channel_length ch) in
+      let whitespace_regex = Str.regexp "[ \n\r\x0c\t]+" in
+      let rec extract_class_names ?(acc = []) = function
+        | [] -> acc
+        | "class" :: x :: tail -> extract_class_names ~acc:(x :: acc) tail
+        | _ :: t -> extract_class_names ~acc t
+      in
+      let ch = open_in @@ dir ^ "/" ^ filename in
+      let s = in_channel_length ch |> really_input_string @@ ch in
       let () = close_in ch in
       let tokens = Str.split whitespace_regex s in
-      (class_names tokens, filename)
+      (extract_class_names tokens, filename)
     in
-    let classes_file_pairs = List.map get_classes_file class_files in
-    let f (cs, file) =
-      let process classes filename =
-        let mutate filename cl_name =
-          deps := StringMap.add cl_name filename !deps
-        in
-        classes |> List.iter @@ mutate filename
-      in
-      process cs file
+    let file_names =
+      let class_extension_pattern x = Filename.extension x |> ( = ) ".cls" in
+      Sys.readdir dir |> Array.to_list |> List.filter class_extension_pattern
     in
-    List.iter f classes_file_pairs
+    let classes_file_pairs = List.map get_classes_file file_names in
+    let process (cs, f) =
+      let mutate c = deps := StringMap.add c f !deps in
+      List.iter mutate cs
+    in
+    List.iter process classes_file_pairs
+    (* let process (cs, f) = List.iter (fun c -> deps := StringMap.add c f !deps) cs in *)
 end
