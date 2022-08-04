@@ -29,10 +29,10 @@ module DependencyResolver = struct
     let classes_file_pairs = List.map get_classes_file class_files in
     let f (cs, file) =
       let process classes filename =
-        let mutate cl_name filename =
+        let mutate filename cl_name =
           deps := StringMap.add cl_name filename !deps
         in
-        List.iter (fun x -> mutate x filename) classes
+        classes |> List.iter @@ mutate filename
       in
       process cs file
     in
