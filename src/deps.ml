@@ -29,5 +29,4 @@ module DependencyResolver = struct
       List.iter mutate cs
     in
     List.iter process classes_file_pairs
-    (* let process (cs, f) = List.iter (fun c -> deps := StringMap.add c f !deps) cs in *)
 end
