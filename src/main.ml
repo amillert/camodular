@@ -22,6 +22,7 @@ let process filename () =
 
 let () =
   let open Util.Syntax in
+  let _deps = Deps.DependencyResolver.build "dir" in
   let filename1 = "./files/testa_ok" in
   let filename2 = "./files/testb_ok" in
   let filename3 = "./files/testc_fail" in
