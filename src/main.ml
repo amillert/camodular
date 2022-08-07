@@ -1,29 +1,37 @@
-let process filename () =
-  let open Repr.Ast in
-  let open Env in
-  let lexbuf = filename |> open_in |> Sedlexing.Utf8.from_channel in
-  let expectFailure =
-    filename |> String.split_on_char '_' |> List.rev |> List.hd = "fail"
-  in
-  let parse = MenhirLib.Convert.Simplified.traditional2revised Parser.program in
-  let asts =
-    try lexbuf |> Lexer.lex |> parse with
-    | Env.EnvException msg when expectFailure ->
-        let () = print_endline @@ "Graceful recovery from EnvError: " ^ msg in
-        [ Invalid ]
-    | Env.EnvException msg ->
-        let () = print_endline @@ "Dirty recovery from EnvError: " ^ msg in
-        failwith msg
-    | _ -> failwith "Unexpected error; can't recover - BOOOM !"
-  in
-  List.iter print asts
+module DR = Deps.DependencyResolver
 
-[@@@ocamlformat "disable"]
+(* TODO: applicative to automatically go through files in directory. *)
+(* let _manual_test = *)
+(*   let open Util.Syntax in *)
+(*   let filename1 = "./files/testa_ok.cls" in *)
+(*   let filename2 = "./files/testb_ok.cls" in *)
+(*   let filename3 = "./files/testc_fail.cls" in *)
+(*   [process filename1 *> process filename3 @> process filename2] [@ocamlformat "disable"] *)
 
-let () =
-  let open Util.Syntax in
-  let _deps = Deps.DependencyResolver.build "dir" in
-  let filename1 = "./files/testa_ok" in
-  let filename2 = "./files/testb_ok" in
-  let filename3 = "./files/testc_fail" in
-  process filename1 *> process filename3 @> process filename2
+(* let process filename () = *)
+(*   let open Env in *)
+(*   let open Repr.Ast in *)
+(*   let lexbuf = filename |> open_in |> Sedlexing.Utf8.from_channel in *)
+(*   let expect_failure = *)
+(*     1 *)
+(*     |> List.nth @@ String.split_on_char '.' filename *)
+(*     |> String.split_on_char '_' |> List.rev |> List.hd = "fail" *)
+(*   in *)
+(*   let parse = MenhirLib.Convert.Simplified.traditional2revised Parser.program in *)
+(*   let asts = *)
+(*     try lexbuf |> Lexer.lex |> parse with *)
+(*     | Env.EnvException msg when expect_failure -> *)
+(*         let () = print_endline @@ "Graceful recovery from EnvError: " ^ msg in *)
+(*         [ Invalid ] *)
+(*     | Env.EnvException msg -> *)
+(*         let () = print_endline @@ "Dirty recovery from EnvError: " ^ msg in *)
+(*         failwith msg *)
+(*     | _ -> failwith "Unexpected error; can't recover - BOOOM !" *)
+(*   in *)
+(*   List.iter print asts *)
+
+let _auto_test =
+  let _deps = DR.build "files" in
+  (* let () = DR.show () in *)
+  (* if DR.run "A" then print_endline "all good" else print_endline "failed" *)
+  ()
