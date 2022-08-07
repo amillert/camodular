@@ -1,5 +1,6 @@
 open Repr.Ast
 open Util
+module DR = Deps.DependencyResolver
 module StringMap = Map.Make (String)
 
 module IdSet = Set.Make (struct
@@ -23,11 +24,45 @@ module Env = struct
     | None -> raise @@ EnvException "Can't find extended module in env"
     | Some x -> x
 
+  let process filename () =
+    let open Repr.Ast in
+    let lexbuf = filename |> open_in |> Sedlexing.Utf8.from_channel in
+    let expect_failure =
+      1
+      |> List.nth @@ String.split_on_char '.' filename
+      |> String.split_on_char '_' |> List.rev |> List.hd = "fail"
+    in
+    let parse =
+      MenhirLib.Convert.Simplified.traditional2revised Parser.program
+    in
+    let asts =
+      try lexbuf |> Lexer.lex |> parse with
+      | EnvException msg when expect_failure ->
+          let () = print_endline @@ "Graceful recovery from EnvError: " ^ msg in
+          [ Invalid ]
+      | EnvException msg ->
+          let () = print_endline @@ "Dirty recovery from EnvError: " ^ msg in
+          failwith msg
+      | _ -> failwith "Unexpected error; can't recover - BOOOM !"
+    in
+    List.iter print asts
+
   let add_to_env ~prints = function
     | Empty | Invalid -> ()
     | ClassScope { id; vars; mode } -> (
         let join_parent_scope pid =
-          let parent_scope = find_in_env pid in
+          let parent_scope =
+            let filename =
+              try DR.find_in_deps pid with
+              | DR.DepsException msg ->
+                  let () = print_endline "Class not found as dependency" in
+                  failwith msg
+              | _ -> failwith "xd ?"
+            in
+            (* recursively parse file to resolve deps backwards. *)
+            let () = process filename () in
+            find_in_env pid
+          in
           Util.dedup parent_scope.exposed vars
         in
         let merge_scopes ?(expose = false) pid =
@@ -54,6 +89,7 @@ module Env = struct
             let internal_scope = { internal = vars; exposed = vars } in
             env := StringMap.add id internal_scope !env
         | Extend pid ->
+            (* resolve_backward pid based on deps *)
             env := StringMap.add id (merge_scopes pid ~expose:true) !env
         | Open pid -> env := StringMap.add id (merge_scopes pid) !env)
 end
